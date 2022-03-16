@@ -1,46 +1,94 @@
 #include "get_next_line.h"
 
-char	*getline(char **buf)
-{
-	char	*res;
-	char	*t;
-	int		i;
-	int		mv;
+char	*ft_substr(char const *s, unsigned int start, size_t len)
 
-	while (i = read(fd, *buf, BUFFER_SIZE)
+{
+	char	*ptr;
+	size_t	i;
+	size_t	slen;
+
+	if (!s)
+		return (0);
+	slen = ft_strlen(s);
+	if (start >= slen)
+		return (ft_strdup(""));
+	else if (slen < (start + len))
+		len = slen - start;
+	ptr = (char *)malloc(len + 1);
+	if (!ptr)
+		return (0);
+	i = 0;
+	while (i < len)
+		ptr[i++] = s[start++];
+	ptr[i] = '\0';
+	return (ptr);
+}
+
+char	*line_out(char **str)
+{
+	char	*t;
+	char	*line;
+	int		count;
+
+	t = *str;
+	*str = ft_strchr(t, '\n');
+	if (*str == NULL)
 	{
-		*buf[i] = '\0';
-		t = ft_strchr(*buf, '\n');
-		if (t == NULL)
+		line = ft_strdup(t);
+	}
+	else
+	{
+		count = *str - t + 1;
+		line = ft_substr(t, 0, count);
+		*str = *str + 1;
+		*str = ft_strdup(*str);
+	}
+	if (**str == '\0')
+	{
+		free (*str);
+		str = NULL;
+	}
+	free (t);
+	return (line);
+}
+
+char	*get_line(int fd, int size)
+
+{
+	static char	*temp;
+	char		*buf;
+	char		*t;
+	int			readres;
+
+	buf = (char *)malloc(size + 1);
+	while (!(ft_strchr(temp, '\n')) || readres > 0)
+	{
+		readres = read(fd, buf, size);
+		if (readres > 0)
 		{
-			t = ft_strjoin(t, *buf);
+			buf[readres] = '\0';
+			t = temp;
+			temp = ft_strjoin(t, buf);
+			free (t);
 		}
-		if (t != NULL)
+		if (readres < 0 || (temp == NULL && readres == 0))
 		{
-			mv = t - *buf + 1;
-			res = ft_substr(buf, 0, mv);
-			res = ft_strjoin(t, res);
-			buf = t + 1;
-			return (res)
+			free(buf);
+			return (NULL);
 		}
 	}
-	return (t);
+	free (buf);
+	return (line_out(&temp));
 }
 
 char	*get_next_line(int fd)
 {
-	static char	buf[BUFFER_SIZE + 1];
-	char		*res;
-	char		*t;
-	int			mv;
+	int		size;
+	char	*line;
 
-	t = ft_strchr(buf, '\n');
-	if (t != NULL)
-	{
-		mv = t - buf + 1;
-		res = ft_substr(buf, 0, mv);
-		buf = t + 1;
-		return (res);
-	}
-	getline()
+	size = BUFFER_SIZE;
+	if (fd < 0 || size < 1)
+		return (NULL);
+	line = get_line(fd, size);
+	return (line);
 }
