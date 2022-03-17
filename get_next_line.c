@@ -49,15 +49,13 @@ char	*line_out(char **str)
 	return (line);
 }
 
-char	*get_line(int fd, int size)
+char	*get_line(int fd, int size, char *buf)
 
 {
 	static char	*temp;
-	char		*buf;
 	char		*t;
 	int			readres;
 
-	buf = (char *)malloc(size + 1);
 	while (1)
 	{
 		readres = read(fd, buf, size);
@@ -74,18 +72,25 @@ char	*get_line(int fd, int size)
 			}
 		}
 		if (readres <= 0 || ft_strchr(temp, '\n'))
-				break;
+			break ;
 	}
-	free(buf);
 	return (line_out(&temp));
 }
 
 char	*get_next_line(int fd)
 {
 	int		size;
+	char	*line;
+	char	*buf;
 
 	size = BUFFER_SIZE;
+	buf = (char *)malloc(size + 1);
 	if (fd < 0 || size < 1)
+	{
+		free (buf);
 		return (NULL);
-	return (get_line(fd, size));
+	}
+	line = get_line(fd, size, buf);
+	free (buf);
+	return (line);
 }
