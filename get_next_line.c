@@ -30,24 +30,22 @@ char	*line_out(char **str)
 	char	*line;
 	int		count;
 
-	t = *str;
-	*str = ft_strchr(t, '\n');
-	if (*str == NULL && **str != '\0')
-		line = ft_strdup(t);
-	if (**str != '\0' && *str != NULL)
+	if (!*str)
+		return (NULL);
+	if (!ft_strchr(*str, '\n'))
 	{
-		count = *str - t + 1;
-		line = ft_substr(t, 0, count);
-		*str = *str + 1;
-		*str = ft_strdup(*str);
-	}
-	if (**str == '\0')
-	{
-		free(*str);
+		line = ft_strdup(*str);
+		free (*str);
 		*str = NULL;
-		line = *str;
+		return (line);
 	}
-	free (t);
+	t = *str;
+	*str = ft_strchr(*str, '\n');
+	count = *str - t + 1;
+	line = ft_substr(t, 0, count);
+	*str = *str + 1;
+	*str = ft_strdup(*str);
+	free(t);
 	return (line);
 }
 
@@ -60,34 +58,35 @@ char	*get_line(int fd, int size)
 	int			readres;
 
 	buf = (char *)malloc(size + 1);
-	while (!(ft_strchr(temp, '\n')) || readres > 0)
+	if (!temp || !ft_strchr(temp, '\n'))
 	{
 		readres = read(fd, buf, size);
-		if (readres > 0)
+		while (readres > 0)
 		{
 			buf[readres] = '\0';
-			t = temp;
-			temp = ft_strjoin(t, buf);
-			free (t);
-		}
-		if (readres < 0 || (temp == NULL && readres == 0))
-		{
-			free(buf);
-			return (NULL);
+			if (!temp)
+				temp = ft_strdup(buf);
+			else
+			{
+				t = temp;
+				temp = ft_strjoin(temp, buf);
+				free (t);
+			}
+			if (ft_strchr(temp, '\n'))
+				break ;
+			readres = read(fd, buf, size);
 		}
 	}
-	free (buf);
+	free(buf);
 	return (line_out(&temp));
 }
 
 char	*get_next_line(int fd)
 {
 	int		size;
-	char	*line;
 
 	size = BUFFER_SIZE;
 	if (fd < 0 || size < 1)
 		return (NULL);
-	line = get_line(fd, size);
-	return (line);
+	return (get_line(fd, size));
 }
