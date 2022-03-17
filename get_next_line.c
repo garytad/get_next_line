@@ -32,11 +32,9 @@ char	*line_out(char **str)
 
 	t = *str;
 	*str = ft_strchr(t, '\n');
-	if (*str == NULL)
-	{
+	if (*str == NULL && **str != '\0')
 		line = ft_strdup(t);
-	}
-	else
+	if (**str != '\0' && *str != NULL)
 	{
 		count = *str - t + 1;
 		line = ft_substr(t, 0, count);
@@ -45,8 +43,9 @@ char	*line_out(char **str)
 	}
 	if (**str == '\0')
 	{
-		free (*str);
-		str = NULL;
+		free(*str);
+		*str = NULL;
+		line = *str;
 	}
 	free (t);
 	return (line);
