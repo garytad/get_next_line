@@ -58,10 +58,10 @@ char	*get_line(int fd, int size)
 	int			readres;
 
 	buf = (char *)malloc(size + 1);
-	if (!temp || !ft_strchr(temp, '\n'))
+	while (1)
 	{
 		readres = read(fd, buf, size);
-		while (readres > 0)
+		if (readres > 0)
 		{
 			buf[readres] = '\0';
 			if (!temp)
@@ -70,12 +70,11 @@ char	*get_line(int fd, int size)
 			{
 				t = temp;
 				temp = ft_strjoin(temp, buf);
-				free (t);
+				free(t);
 			}
-			if (ft_strchr(temp, '\n'))
-				break ;
-			readres = read(fd, buf, size);
 		}
+		if (readres <= 0 || ft_strchr(temp, '\n'))
+				break;
 	}
 	free(buf);
 	return (line_out(&temp));
