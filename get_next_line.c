@@ -34,7 +34,10 @@ char	*line_out(char **str)
 		return (NULL);
 	if (!ft_strchr(*str, '\n'))
 	{
-		line = ft_strdup(*str);
+		if (**str != '\0')
+			line = ft_strdup(*str);
+		else
+			line = NULL;
 		free (*str);
 		*str = NULL;
 		return (line);
